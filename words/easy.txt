@@ -1,0 +1,3 @@
+1;fire;ogień
+2;water;woda
+3;grass;trawa

@@ -47,10 +47,13 @@ class User():
                 print(f"Word {count+1} of {len(words_idx)}")
                 print(f"English: { word['eng'] }")
                 polish = input(f"Polish: ")
-                if polish == word['pl'][:-1]:
+                if polish == word['pl'].rstrip("\n"):
                     self.words[idx]['date'] = today + dt.timedelta(days=7)
+                    print('OK')
                 else:
+                    print(f'BAD - right answer is: {word["pl"]}')
                     self.words[idx]['date'] = today
+                input('Press enter for next word...')
                 clear_CLI()
             self.create_log()
 
@@ -61,6 +64,14 @@ class User():
             if 'txt' == file[-3:] and f'{self.username}-{self.current_list}-' in file:
                 print(f'{file[:-4]}')
                 count += 1
+                with open(f'./logs/{file}', 'r') as f:
+                    for line in f:
+                        data = line.split(';')
+                        for idx, word in enumerate(self.words):
+                            if word['id'] == data[0]:
+                                date = data[1].split('-')
+                                self.words[idx]['date'] = dt.date(int(date[0]), int(date[1]), int(date[2]))
+                                break
                 
         print(f'Found {count} logs')
 
@@ -111,7 +122,12 @@ if __name__ == '__main__':
         option = input('Type command: ')
 
         if option == 'help': # display available commands
-            print('Help...')
+            print('Avaiable commands:')
+            print('create - create new user account')
+            print('login - login to existing user account')
+            print('list - list avaiable words lists')
+            print('load - load valid words list')
+            print('play - start a game')
         elif option == 'list' and player: # list available words lists
             files = os.listdir('./words')
             print('Available words lists:')
@@ -142,6 +158,8 @@ if __name__ == '__main__':
                 print('Successfully loged in!')
             else:
                 print('Wrong username or password!')
+        elif option == 'exit':
+            break
         else:
             print('Wrong option! Type help to list available commands.')
         input('Press enter to continue...')
